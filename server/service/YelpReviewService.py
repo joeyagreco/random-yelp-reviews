@@ -5,6 +5,7 @@ from server.client.YelpApiClient import YelpApiClient
 from server.enum.YelpSearchTerm import YelpSearchTerm
 from server.enum.YelpSortByTerm import YelpSortByTerm
 from server.exception.BusinessSearchTimeoutError import BusinessSearchTimeoutError
+from server.exception.InsufficientNumberOfReviewsError import InsufficientNumberOfReviewsError
 from server.model.Business import Business
 from server.model.Review import Review
 from server.util.DataReader import DataReader
@@ -17,13 +18,15 @@ class YelpReviewService:
         self.__YELP_BUSINESS_REQUEST_LIMIT = 50
         self.__MAX_OFFSET = 10
         self.__MINIMUM_REVIEWS_NEEDED = 3
-        self.__NUMBER_OF_RANDOM_BUSINESS_RETRIES = 50
-        self.__BUSINESS_SEARCH_RETRIES = 5
+        self.__SELECT_RANDOM_BUSINESS_MAX_RETRIES = 50
+        self.__BUSINESS_SEARCH_MAX_RETRIES = 5
 
         self.__yelpApiClient = YelpApiClient()
 
     def getRandomReviewAndBusiness(self) -> Tuple[Review, Business]:
-        for _ in range(self.__BUSINESS_SEARCH_RETRIES):
+        businessList = list()
+        businessSearchRetriesRemaining = self.__BUSINESS_SEARCH_MAX_RETRIES
+        while len(businessList) == 0:
             # first, find a random business
             # get a random search term
             searchTerm = random.choice(YelpSearchTerm.list())
@@ -39,12 +42,18 @@ class YelpReviewService:
                                                                       offset=offset)
             if len(businessList) > 0:
                 break
-        if len(businessList) == 0:
-            raise BusinessSearchTimeoutError("COULD NOT FIND BUSINESSES!")
-        for _ in range(self.__NUMBER_OF_RANDOM_BUSINESS_RETRIES):
+            businessSearchRetriesRemaining -= 1
+            if businessSearchRetriesRemaining == 0:
+                raise BusinessSearchTimeoutError("COULD NOT FIND BUSINESSES!")
+        business = None
+        selectRandomBusinessRetiresRemaining = self.__SELECT_RANDOM_BUSINESS_MAX_RETRIES
+        while business is None:
             business = random.choice(businessList)
             if business.reviewCount >= self.__MINIMUM_REVIEWS_NEEDED:
                 break
+            selectRandomBusinessRetiresRemaining -= 1
+            if selectRandomBusinessRetiresRemaining == 0:
+                raise InsufficientNumberOfReviewsError("SELECTED BUSINESS DOES NOT HAVE ")
         # get a review from this business
         reviewList = self.__yelpApiClient.getReviewsByBusinessId(business.id)
         return random.choice(reviewList), business
