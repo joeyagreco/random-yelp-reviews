@@ -16,26 +16,31 @@ class YelpReviewService:
         self.__YELP_BUSINESS_REQUEST_LIMIT = 50
         self.__MAX_OFFSET = 10
         self.__MINIMUM_REVIEWS_NEEDED = 3
-        self.__NUMBER_OF_RANDOM_BUSINESS_TRIES = 50
+        self.__NUMBER_OF_RANDOM_BUSINESS_RETRIES = 50
+        self.__BUSINESS_SEARCH_RETRIES = 5
 
         self.__yelpApiClient = YelpApiClient()
 
     def getRandomReviewAndBusiness(self) -> Tuple[Review, Business]:
-        # first, find a random business
-        # get a random search term
-        searchTerm = random.choice(YelpSearchTerm.list())
-        # get a random zip code
-        zipCode = random.choice(DataReader.getDataListFromFile(self.__ZIP_CODES_FULL_PATH))
-        # sort by businesses with the most reviews
-        sortBy = YelpSortByTerm.REVIEW_COUNT
-        # limit result count
-        limit = self.__YELP_BUSINESS_REQUEST_LIMIT
-        # set offset of results
-        offset = random.randint(1, self.__MAX_OFFSET + 1)
-        businessList = self.__yelpApiClient.getBusinessesBySearch(searchTerm, zipCode, sortBy=sortBy, limit=limit,
-                                                                  offset=offset)
-        # TODO: check for/deal with empty list
-        for _ in range(self.__NUMBER_OF_RANDOM_BUSINESS_TRIES):
+        for _ in range(self.__BUSINESS_SEARCH_RETRIES):
+            # first, find a random business
+            # get a random search term
+            searchTerm = random.choice(YelpSearchTerm.list())
+            # get a random zip code
+            zipCode = random.choice(DataReader.getDataListFromFile(self.__ZIP_CODES_FULL_PATH))
+            # sort by businesses with the most reviews
+            sortBy = YelpSortByTerm.REVIEW_COUNT
+            # limit result count
+            limit = self.__YELP_BUSINESS_REQUEST_LIMIT
+            # set offset of results
+            offset = random.randint(1, self.__MAX_OFFSET + 1)
+            businessList = self.__yelpApiClient.getBusinessesBySearch(searchTerm, zipCode, sortBy=sortBy, limit=limit,
+                                                                      offset=offset)
+            if len(businessList) > 0:
+                break
+        if len(businessList) == 0:
+            raise Exception("COULD NOT FIND BUSINESSES!")
+        for _ in range(self.__NUMBER_OF_RANDOM_BUSINESS_RETRIES):
             business = random.choice(businessList)
             if business.reviewCount >= self.__MINIMUM_REVIEWS_NEEDED:
                 break
