@@ -49,7 +49,7 @@ class BotRunner:
                     ImageDownloader.downloadImageByUrl(business.imageUrl, self.__TMP_BUSINESS_PIC_FILE_NAME,
                                                        tmpFolderDirectory)
                     mediaUrls.append(os.path.join(tmpFolderDirectory, self.__TMP_BUSINESS_PIC_FILE_NAME))
-                tweetText = f'RATING: {self.__STAR_EMOJI * review.rating}\n\n"{review.text}"\n\nBY: {review.user.name}\n\nBUSINESS: {business.name}\n\n{review.url}\n\nLOCATION: {business.location.city} {business.location.state}, {business.location.country}'
+                tweetText = f'RATING: {self.__STAR_EMOJI * review.rating}\n\n"{review.text}"\n\nBY: {review.user.name}\n\nBUSINESS: {business.name}\n\nLOCATION: {business.location.city} {business.location.state}, {business.location.country}\n\n{review.url}'
                 status = TwitterTweeter.createTweet(tweetText, mediaUrls=mediaUrls)
                 self.__LOGGER.info(f"TWEETED SUCCESSFULLY: {EnvironmentReader.get('TWEET_BASE_URL')}{status.id}")
             except BusinessSearchTimeoutError as e:
