@@ -2,6 +2,7 @@ import os
 import time
 
 from server.exception.BusinessSearchTimeoutError import BusinessSearchTimeoutError
+from server.exception.InsufficientNumberOfReviewsError import InsufficientNumberOfReviewsError
 from server.service.YelpReviewService import YelpReviewService
 from server.twitter.TwitterTweeter import TwitterTweeter
 from server.util.CustomLogger import CustomLogger
@@ -52,6 +53,8 @@ class BotRunner:
                 status = TwitterTweeter.createTweet(tweetText, mediaUrls=mediaUrls)
                 self.__LOGGER.info(f"TWEETED SUCCESSFULLY: {EnvironmentReader.get('TWEET_BASE_URL')}{status.id}")
             except BusinessSearchTimeoutError as e:
+                self.__LOGGER.error(e)
+            except InsufficientNumberOfReviewsError as e:
                 self.__LOGGER.error(e)
             self.__LOGGER.info(f"SLEEPING FOR {minutesInBetweenTweets} minutes...")
             time.sleep(minutesInBetweenTweets * self.__SECONDS_IN_A_MINUTE)
