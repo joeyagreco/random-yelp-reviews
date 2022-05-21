@@ -31,7 +31,7 @@ class YelpReviewService:
         while len(businessList) == 0:
             # first, find a random business
             # get a random search term
-            searchTerm = random.choice(YelpSearchTerm.list())
+            searchTerm = random.choice(YelpSearchTerm.list()).name
             # get a random zip code
             zipCode = random.choice(DataReader.getDataListFromFile(self.__ZIP_CODES_FULL_PATH))
             # sort by businesses with the most reviews
