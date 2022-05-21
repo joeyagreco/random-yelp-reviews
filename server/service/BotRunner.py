@@ -2,12 +2,15 @@ import os
 
 from server.service.YelpReviewService import YelpReviewService
 from server.twitter.TwitterTweeter import TwitterTweeter
+from server.util.CustomLogger import CustomLogger
+from server.util.EnvironmentReader import EnvironmentReader
 from server.util.ImageDownloader import ImageDownloader
 
 
 class BotRunner:
 
     def __init__(self):
+        self.__LOGGER = CustomLogger.getLogger()
         self.__STAR_EMOJI = "\u2B50"
         self.__TMP_DIRECTORY_NAME = "tmp"
         self.__TMP_USER_PROFILE_PIC_FILE_NAME = "tmp_user_profile.jpg"
@@ -41,3 +44,4 @@ class BotRunner:
             mediaUrls.append(os.path.join(tmpFolderDirectory, self.__TMP_BUSINESS_PIC_FILE_NAME))
         tweetText = f'RATING: {self.__STAR_EMOJI * review.rating}\n\n"{review.text}"\n\nBY: {review.user.name}\n\nBUSINESS: {business.name}\n\n{review.url}'
         status = TwitterTweeter.createTweet(tweetText, mediaUrls=mediaUrls)
+        self.__LOGGER.info(f"TWEETED SUCCESSFULLY: {EnvironmentReader.get('TWEET_BASE_URL')}{status.id}")
