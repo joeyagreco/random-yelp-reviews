@@ -40,12 +40,12 @@ class BotRunner:
                 # will hold images we will send with tweet
                 mediaUrls = list()
                 # download user profile image locally to tmp folder
-                if review.user.imageUrl is not None:
+                if review.user.imageUrl:
                     ImageDownloader.downloadImageByUrl(review.user.imageUrl, self.__TMP_USER_PROFILE_PIC_FILE_NAME,
                                                        tmpFolderDirectory)
                     mediaUrls.append(os.path.join(tmpFolderDirectory, self.__TMP_USER_PROFILE_PIC_FILE_NAME))
                 # download business profile image locally to tmp folder
-                if business.imageUrl is not None:
+                if business.imageUrl:
                     ImageDownloader.downloadImageByUrl(business.imageUrl, self.__TMP_BUSINESS_PIC_FILE_NAME,
                                                        tmpFolderDirectory)
                     mediaUrls.append(os.path.join(tmpFolderDirectory, self.__TMP_BUSINESS_PIC_FILE_NAME))
