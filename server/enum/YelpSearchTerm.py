@@ -9,6 +9,7 @@ class YelpSearchTerm(Enum):
     Yelp search terms.
     """
     BAR = "BAR"
+    GAS = "GAS"
     GROCERY = "GROCERY"
     GYM = "GYM"
     HIGHEST_REVIEWED = "HIGHEST_REVIEWED"
