@@ -4,6 +4,7 @@ from typing import Tuple
 from server.client.YelpApiClient import YelpApiClient
 from server.enum.YelpSearchTerm import YelpSearchTerm
 from server.enum.YelpSortByTerm import YelpSortByTerm
+from server.exception.BusinessSearchTimeoutError import BusinessSearchTimeoutError
 from server.model.Business import Business
 from server.model.Review import Review
 from server.util.DataReader import DataReader
@@ -39,11 +40,11 @@ class YelpReviewService:
             if len(businessList) > 0:
                 break
         if len(businessList) == 0:
-            raise Exception("COULD NOT FIND BUSINESSES!")
+            raise BusinessSearchTimeoutError("COULD NOT FIND BUSINESSES!")
         for _ in range(self.__NUMBER_OF_RANDOM_BUSINESS_RETRIES):
             business = random.choice(businessList)
             if business.reviewCount >= self.__MINIMUM_REVIEWS_NEEDED:
                 break
         # get a review from this business
         reviewList = self.__yelpApiClient.getReviewsByBusinessId(business.id)
-        return (random.choice(reviewList), business)
+        return random.choice(reviewList), business
