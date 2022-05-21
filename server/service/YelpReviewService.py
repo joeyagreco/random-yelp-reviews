@@ -1,3 +1,4 @@
+import os
 import random
 from typing import Tuple
 
@@ -14,7 +15,8 @@ from server.util.DataReader import DataReader
 class YelpReviewService:
 
     def __init__(self):
-        self.__ZIP_CODES_FULL_PATH = "C:\\Users\\14143\\PycharmProjects\\random-yelp-reviews\\server\\data\\zip_codes.txt"
+        self.__ZIP_CODES_FULL_PATH = os.path.abspath(
+            os.path.join(os.path.dirname(os.path.realpath(__file__)), f"../data/zip_codes.txt"))
         self.__YELP_BUSINESS_REQUEST_LIMIT = 50
         self.__MAX_OFFSET = 10
         self.__MINIMUM_REVIEWS_NEEDED = 3
