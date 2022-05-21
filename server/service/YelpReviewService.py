@@ -1,11 +1,44 @@
+import random
+from typing import Tuple
+
+from server.client.YelpApiClient import YelpApiClient
+from server.enum.YelpSearchTerm import YelpSearchTerm
+from server.enum.YelpSortByTerm import YelpSortByTerm
+from server.model.Business import Business
 from server.model.Review import Review
+from server.util.DataReader import DataReader
 
 
 class YelpReviewService:
 
     def __init__(self):
-        pass
+        self.__ZIP_CODES_FULL_PATH = "C:\\Users\\14143\\PycharmProjects\\random-yelp-reviews\\server\\data\\zip_codes.txt"
+        self.__YELP_BUSINESS_REQUEST_LIMIT = 50
+        self.__MAX_OFFSET = 10
+        self.__MINIMUM_REVIEWS_NEEDED = 3
+        self.__NUMBER_OF_RANDOM_BUSINESS_TRIES = 50
 
-    def getRandomReview(self) -> Review:
+        self.__yelpApiClient = YelpApiClient()
+
+    def getRandomReviewAndBusiness(self) -> Tuple[Review, Business]:
         # first, find a random business
-        pass
+        # get a random search term
+        searchTerm = random.choice(YelpSearchTerm.list())
+        # get a random zip code
+        zipCode = random.choice(DataReader.getDataListFromFile(self.__ZIP_CODES_FULL_PATH))
+        # sort by businesses with the most reviews
+        sortBy = YelpSortByTerm.REVIEW_COUNT
+        # limit result count
+        limit = self.__YELP_BUSINESS_REQUEST_LIMIT
+        # set offset of results
+        offset = random.randint(1, self.__MAX_OFFSET + 1)
+        businessList = self.__yelpApiClient.getBusinessesBySearch(searchTerm, zipCode, sortBy=sortBy, limit=limit,
+                                                                  offset=offset)
+        # TODO: check for/deal with empty list
+        for _ in range(self.__NUMBER_OF_RANDOM_BUSINESS_TRIES):
+            business = random.choice(businessList)
+            if business.reviewCount >= self.__MINIMUM_REVIEWS_NEEDED:
+                break
+        # get a review from this business
+        reviewList = self.__yelpApiClient.getReviewsByBusinessId(business.id)
+        return (random.choice(reviewList), business)

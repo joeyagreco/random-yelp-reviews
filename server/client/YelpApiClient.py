@@ -35,6 +35,7 @@ class YelpApiClient:
                                    name=businessDict["name"],
                                    imageUrl=businessDict["image_url"],
                                    url=businessDict["url"],
+                                   reviewCount=businessDict["review_count"],
                                    categories=self.__objectifyCategoriesList(businessDict["categories"]),
                                    rating=businessDict["rating"],
                                    location=self.__objectifyLocation(businessDict["location"]),

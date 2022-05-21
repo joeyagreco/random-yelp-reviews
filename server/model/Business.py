@@ -11,6 +11,7 @@ class Business:
     name: str
     imageUrl: str
     url: str
+    reviewCount: int
     categories: List[Category]
     rating: float
     location: Location

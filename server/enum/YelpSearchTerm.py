@@ -10,3 +10,7 @@ class YelpSearchTerm(Enum):
     """
     HIGHEST_REVIEWED = "HIGHEST_REVIEWED"
     LOWEST_REVIEWED = "LOWEST_REVIEWED"
+    
+    @classmethod
+    def list(cls):
+        return list(map(lambda c: c.value, cls))
