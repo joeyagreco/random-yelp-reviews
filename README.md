@@ -11,6 +11,32 @@ Use the package manager [pip](https://pip.pypa.io/en/stable/) to install the req
 pip install -r requirements.txt
 ```
 
+## Setup
+
+The following environment variables must be defined before running the script:
+
+```dotenv
+# Yelp API
+
+YELP_API_BASE_URL=https://api.yelp.com/v3/businesses
+YELP_API_API_KEY=...
+YELP_API_SEARCH_ROUTE=/search
+YELP_API_REVIEWS_ROUTE=/reviews
+
+# Twitter
+
+TWITTER_API_KEY=...
+TWITTER_API_KEY_SECRET=...
+TWITTER_BEARER_TOKEN=...%3D0etEAGE3UfM6iAJwpRDs1PPAJe9dWsseXHXT4eBDbPb9VDlnh7
+TWITTER_ACCESS_TOKEN=...-kDsGcOsqUPGaz4tlPRgmezrhdIXVYV
+TWITTER_ACCESS_TOKEN_SECRET=...
+TWEET_BASE_URL=https://twitter.com/{account_@_name}/status/
+
+# GENERAL
+
+MINUTES_IN_BETWEEN_TWEETS=60
+```
+
 ## Contributing
 
 Pull requests are welcome. For major changes, please open an issue first to discuss what you would like to change.
