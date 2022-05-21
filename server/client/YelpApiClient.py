@@ -1,3 +1,4 @@
+from datetime import datetime
 from typing import List, Optional
 
 import requests
@@ -5,6 +6,8 @@ import requests
 from server.model.Business import Business
 from server.model.Category import Category
 from server.model.Location import Location
+from server.model.Review import Review
+from server.model.User import User
 from server.util.EnvironmentReader import EnvironmentReader
 
 
@@ -58,6 +61,32 @@ class YelpApiClient:
                                            title=categoriesDict["title"]))
         return categoriesList
 
+    def __objectifyUser(self, userDict: dict) -> Optional[User]:
+        userObj = None
+        if userDict is not None:
+            userObj = User(id=userDict["id"],
+                           profileUrl=userDict["profile_url"],
+                           imageUrl=userDict["image_url"],
+                           name=userDict["name"])
+        return userObj
+
+    def __objectifyReview(self, reviewDict: dict) -> Optional[Review]:
+        reviewObj = None
+        if reviewDict is not None:
+            reviewObj = Review(id=reviewDict["id"],
+                               url=reviewDict["url"],
+                               text=reviewDict["text"],
+                               rating=reviewDict["rating"],
+                               timeCreated=datetime.strptime(reviewDict["time_created"], "%Y-%m-%d %H:%M:%S"),
+                               user=self.__objectifyUser(reviewDict["user"]))
+        return reviewObj
+
+    def __objectifyReviewList(self, reviewDictList: List[dict]) -> List[Review]:
+        reviewList = list()
+        for reviewDict in reviewDictList:
+            reviewList.append(self.__objectifyReview(reviewDict))
+        return reviewList
+
     def getBusinessesBySearch(self, term: str, location: str, **kwargs) -> List[Business]:
         # https://www.yelp.com/developers/documentation/v3/business_search
         limit = kwargs.pop("limit", 1)
@@ -69,3 +98,13 @@ class YelpApiClient:
         }
         response = requests.get(url, headers=headers).json()
         return self.__objectifyBusinessList(response["businesses"])
+
+    def getReviewsByBusinessId(self, businessId: str) -> List[Review]:
+        # https://www.yelp.com/developers/documentation/v3/business_reviews
+
+        url = f"{self.__BASE_URL}/{businessId}{self.__REVIEWS_ROUTE}"
+        headers = {
+            'Authorization': 'Bearer %s' % self.__API_KEY,
+        }
+        response = requests.get(url, headers=headers).json()
+        return self.__objectifyReviewList(response["reviews"])
