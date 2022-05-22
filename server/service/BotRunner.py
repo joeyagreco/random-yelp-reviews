@@ -21,7 +21,7 @@ class BotRunner:
         self.__TMP_USER_PROFILE_PIC_FILE_NAME = "tmp_user_profile.jpg"
         self.__TMP_BUSINESS_PIC_FILE_NAME = "tmp_business_profile.jpg"
         self.__SECONDS_IN_A_MINUTE = 60
-        self.__MAX_TWEET_CHARACTERS = 280
+        self.__MAX_TWEET_CHARACTERS = 279
         self.__SHORTENED_URL_LENGTH = 23  # https://help.twitter.com/en/using-twitter/how-to-tweet-a-link#:~:text=Post%20the%20Tweet.,-Step%201&text=Step%201-,Type%20or%20paste%20the%20URL,Tweet%20box%20on%20twitter.com.&text=A%20URL%20of%20any%20length,character%20count%20will%20reflect%20this.
 
     def run(self, minutesInBetweenTweets: int):
