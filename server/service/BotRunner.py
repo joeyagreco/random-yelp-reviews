@@ -82,4 +82,11 @@ class BotRunner:
             # we know that reviews will always end with "...", so remove and re-add that
             reviewStr = f'"{review.text[:(remainingCharacters - 3)]}..."\n\n'
             fullTweet = f"{ratingStr}{reviewStr}{byStr}{businessStr}{locationStr}{urlStr}"
+        tweetLength = (len(ratingStr)
+                       + len(reviewStr)
+                       + len(byStr)
+                       + len(businessStr)
+                       + len(locationStr)
+                       + self.__SHORTENED_URL_LENGTH)
+        self.__LOGGER.info(f'BUILT TWEET WITH LENGTH {tweetLength} --- "{fullTweet}"')
         return fullTweet
