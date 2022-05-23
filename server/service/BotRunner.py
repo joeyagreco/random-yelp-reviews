@@ -65,9 +65,9 @@ class BotRunner:
     def __buildTweet(self, review: Review, business: Business) -> str:
         ratingStr = f"RATING: {self.__STAR_EMOJI * review.rating}\n\n"
         reviewStr = f'"{review.text}"\n\n'
-        byStr = f"BY: {review.user.name}\n\n"
-        businessStr = f"BUSINESS: {business.name}\n\n"
-        locationStr = f"LOCATION: {business.location.city}, {business.location.state}\n\n"
+        byStr = f"- {review.user.name}\n\n"
+        businessStr = f"{business.name}\n\n"
+        locationStr = f"{business.location.city}, {business.location.state}\n\n"
         urlStr = review.url
         fullTweet = f"{ratingStr}{reviewStr}{byStr}{businessStr}{locationStr}{urlStr}"
         remainingCharacters = self.__MAX_TWEET_CHARACTERS \
