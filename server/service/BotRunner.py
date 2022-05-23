@@ -1,6 +1,8 @@
 import os
 import time
 
+from tweepy import Forbidden
+
 from server.exception.BusinessSearchTimeoutError import BusinessSearchTimeoutError
 from server.exception.InsufficientNumberOfReviewsError import InsufficientNumberOfReviewsError
 from server.model.Business import Business
@@ -21,8 +23,9 @@ class BotRunner:
         self.__TMP_USER_PROFILE_PIC_FILE_NAME = "tmp_user_profile.jpg"
         self.__TMP_BUSINESS_PIC_FILE_NAME = "tmp_business_profile.jpg"
         self.__SECONDS_IN_A_MINUTE = 60
-        self.__MAX_TWEET_CHARACTERS = 279
+        self.__MAX_TWEET_CHARACTERS = 280
         self.__SHORTENED_URL_LENGTH = 23  # https://help.twitter.com/en/using-twitter/how-to-tweet-a-link#:~:text=Post%20the%20Tweet.,-Step%201&text=Step%201-,Type%20or%20paste%20the%20URL,Tweet%20box%20on%20twitter.com.&text=A%20URL%20of%20any%20length,character%20count%20will%20reflect%20this.
+        self.__FORBIDDEN_MAX_RETRIES = 20
 
     def run(self, minutesInBetweenTweets: int):
         while True:
@@ -53,7 +56,15 @@ class BotRunner:
                     ImageDownloader.downloadImageByUrl(business.imageUrl, self.__TMP_BUSINESS_PIC_FILE_NAME,
                                                        tmpFolderDirectory)
                     mediaUrls.append(os.path.join(tmpFolderDirectory, self.__TMP_BUSINESS_PIC_FILE_NAME))
-                status = TwitterTweeter.createTweet(self.__buildTweet(review, business), mediaUrls=mediaUrls)
+                retries = self.__FORBIDDEN_MAX_RETRIES
+                while retries > 0:
+                    try:
+                        status = TwitterTweeter.createTweet(self.__buildTweet(review, business), mediaUrls=mediaUrls)
+                        break
+                    except Forbidden as e:
+                        self.__LOGGER.error(e)
+                        self.__LOGGER(f"RETRYING... {retries} RETRIES LEFT...")
+                        retries -= 1
                 self.__LOGGER.info(f"TWEETED SUCCESSFULLY: {EnvironmentReader.get('TWEET_BASE_URL')}{status.id}")
             except BusinessSearchTimeoutError as e:
                 self.__LOGGER.error(e)
