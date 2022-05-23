@@ -8,6 +8,7 @@ from server.model.Category import Category
 from server.model.Location import Location
 from server.model.Review import Review
 from server.model.User import User
+from server.util.CustomLogger import CustomLogger
 from server.util.EnvironmentReader import EnvironmentReader
 
 
@@ -17,6 +18,7 @@ class YelpApiClient:
     """
 
     def __init__(self):
+        self.__LOGGER = CustomLogger.getLogger()
         self.__BASE_URL = EnvironmentReader.get("YELP_API_BASE_URL")
         self.__SEARCH_ROUTE = EnvironmentReader.get("YELP_API_SEARCH_ROUTE")
         self.__REVIEWS_ROUTE = EnvironmentReader.get("YELP_API_REVIEWS_ROUTE")
@@ -92,20 +94,28 @@ class YelpApiClient:
         # https://www.yelp.com/developers/documentation/v3/business_search
         limit = kwargs.pop("limit", 1)
         offset = kwargs.pop("offset", 0)
-
-        url = f"{self.__BASE_URL}{self.__SEARCH_ROUTE}?term={term}&location={location}&limit={limit}&offset={offset}"
-        headers = {
-            'Authorization': 'Bearer %s' % self.__API_KEY,
-        }
-        response = requests.get(url, headers=headers).json()
-        return self.__objectifyBusinessList(response["businesses"])
+        businesses = list()
+        try:
+            url = f"{self.__BASE_URL}{self.__SEARCH_ROUTE}?term={term}&location={location}&limit={limit}&offset={offset}"
+            headers = {
+                'Authorization': 'Bearer %s' % self.__API_KEY,
+            }
+            response = requests.get(url, headers=headers).json()
+            businesses = self.__objectifyBusinessList(response["businesses"])
+        except Exception as e:
+            self.__LOGGER.error(e)
+        return businesses
 
     def getReviewsByBusinessId(self, businessId: str) -> List[Review]:
         # https://www.yelp.com/developers/documentation/v3/business_reviews
-
-        url = f"{self.__BASE_URL}/{businessId}{self.__REVIEWS_ROUTE}"
-        headers = {
-            'Authorization': 'Bearer %s' % self.__API_KEY,
-        }
-        response = requests.get(url, headers=headers).json()
-        return self.__objectifyReviewList(response["reviews"])
+        reviews = list()
+        try:
+            url = f"{self.__BASE_URL}/{businessId}{self.__REVIEWS_ROUTE}"
+            headers = {
+                'Authorization': 'Bearer %s' % self.__API_KEY,
+            }
+            response = requests.get(url, headers=headers).json()
+            reviews = self.__objectifyReviewList(response["reviews"])
+        except Exception as e:
+            self.__LOGGER.error(e)
+        return reviews
