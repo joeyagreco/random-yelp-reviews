@@ -100,8 +100,9 @@ class YelpApiClient:
             headers = {
                 'Authorization': 'Bearer %s' % self.__API_KEY,
             }
-            response = requests.get(url, headers=headers).json()
-            businesses = self.__objectifyBusinessList(response["businesses"])
+            response = requests.get(url, headers=headers)
+            response.raise_for_status()
+            businesses = self.__objectifyBusinessList(response.json()["businesses"])
         except Exception as e:
             self.__LOGGER.error(e)
         return businesses
@@ -114,8 +115,9 @@ class YelpApiClient:
             headers = {
                 'Authorization': 'Bearer %s' % self.__API_KEY,
             }
-            response = requests.get(url, headers=headers).json()
-            reviews = self.__objectifyReviewList(response["reviews"])
+            response = requests.get(url, headers=headers)
+            response.raise_for_status()
+            reviews = self.__objectifyReviewList(response.json()["reviews"])
         except Exception as e:
             self.__LOGGER.error(e)
         return reviews
