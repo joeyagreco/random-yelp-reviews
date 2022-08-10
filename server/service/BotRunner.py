@@ -88,5 +88,4 @@ class BotRunner:
                        + len(businessStr)
                        + len(locationStr)
                        + self.__SHORTENED_URL_LENGTH)
-        self.__LOGGER.info(f'BUILT TWEET WITH LENGTH {tweetLength}\n\n"{fullTweet}"\n')
         return fullTweet
