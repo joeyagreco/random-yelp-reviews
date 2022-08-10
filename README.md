@@ -1,7 +1,7 @@
 # Random Yelp Reviews
 
-This uses the [Yelp API](https://www.yelp.com/developers/documentation/v3/get_started) to find random reviews from
-random businesses and tweets them out.
+Twitter bot that uses the [Yelp API](https://www.yelp.com/developers/documentation/v3/get_started) to find random reviews from
+random businesses and [tweets them out](https://twitter.com/RandomYelp).
 
 ## Installation
 
