@@ -48,14 +48,22 @@ class YelpReviewService:
             if businessSearchRetriesRemaining == 0:
                 raise BusinessSearchTimeoutError("COULD NOT FIND BUSINESSES!")
         business = None
-        selectRandomBusinessRetiresRemaining = self.__SELECT_RANDOM_BUSINESS_MAX_RETRIES
+        selectRandomBusinessRetriesRemaining = self.__SELECT_RANDOM_BUSINESS_MAX_RETRIES
         while business is None:
             business = random.choice(businessList)
             if business.reviewCount >= self.__MINIMUM_REVIEWS_NEEDED:
                 break
-            selectRandomBusinessRetiresRemaining -= 1
-            if selectRandomBusinessRetiresRemaining == 0:
-                raise InsufficientNumberOfReviewsError("SELECTED BUSINESS DOES NOT HAVE ")
+            selectRandomBusinessRetriesRemaining -= 1
+            if selectRandomBusinessRetriesRemaining == 0:
+                raise InsufficientNumberOfReviewsError(
+                    "SELECTED BUSINESS DOES NOT HAVE MINIMUM AMOUNT OF REVIEWS REQUIRED.")
         # get a review from this business
+        if business.reviewCount >= self.__MINIMUM_REVIEWS_NEEDED:
+            # This check should not be needed,
+            # however it seems the Yelp API can have some inconsistencies between:
+            #   - the number of reviews the business API response says a business has
+            #   - the number of reviews that a business has in the reviews API response
+            raise InsufficientNumberOfReviewsError(
+                "SELECTED BUSINESS DOES NOT HAVE MINIMUM AMOUNT OF REVIEWS REQUIRED.")
         reviewList = self.__yelpApiClient.getReviewsByBusinessId(business.id)
         return random.choice(reviewList), business
