@@ -43,6 +43,7 @@ class YelpReviewService:
                 businessSearchRetriesRemaining -= 1
                 if businessSearchRetriesRemaining == 0:
                     raise BusinessSearchTimeoutError("COULD NOT FIND BUSINESSES!")
+                continue
             selectedBusiness = None
             # randomize businessList
             random.shuffle(businessList)
