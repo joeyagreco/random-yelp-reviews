@@ -49,9 +49,7 @@ class YelpReviewService:
             random.shuffle(businessList)
             for business in businessList:
                 if business.reviewCount >= self.__MINIMUM_REVIEWS_NEEDED:
-                    selectedBusiness = business
-                    break
-            # get a review from this business
-            if selectedBusiness.reviewCount >= self.__MINIMUM_REVIEWS_NEEDED:
-                reviewList = self.__yelpApiClient.getReviewsByBusinessId(selectedBusiness.id)
-                return random.choice(reviewList), selectedBusiness
+                    # get a review from this business
+                    if business.reviewCount >= self.__MINIMUM_REVIEWS_NEEDED:
+                        reviewList = self.__yelpApiClient.getReviewsByBusinessId(business.id)
+                        return random.choice(reviewList), business
