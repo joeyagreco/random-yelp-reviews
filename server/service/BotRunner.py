@@ -1,6 +1,8 @@
 import os
 import time
 
+from tweepy import TweepyException
+
 from server.exception.BusinessSearchTimeoutError import BusinessSearchTimeoutError
 from server.exception.InsufficientNumberOfReviewsError import InsufficientNumberOfReviewsError
 from server.model.Business import Business
@@ -23,6 +25,7 @@ class BotRunner:
         self.__SECONDS_IN_A_MINUTE = 60
         self.__MAX_TWEET_CHARACTERS = 270
         self.__SHORTENED_URL_LENGTH = 23  # https://help.twitter.com/en/using-twitter/how-to-tweet-a-link#:~:text=Post%20the%20Tweet.,-Step%201&text=Step%201-,Type%20or%20paste%20the%20URL,Tweet%20box%20on%20twitter.com.&text=A%20URL%20of%20any%20length,character%20count%20will%20reflect%20this.
+        self.__ERROR_WAIT_TIME_MINUTES = 2
 
     def run(self, minutesInBetweenTweets: int):
         while True:
@@ -59,6 +62,11 @@ class BotRunner:
                 self.__LOGGER.error(e)
             except InsufficientNumberOfReviewsError as e:
                 self.__LOGGER.error(e)
+            except TweepyException as e:
+                self.__LOGGER.error(e)
+                self.__LOGGER.info(f"Trying again in {self.__ERROR_WAIT_TIME_MINUTES} minutes...")
+                time.sleep(self.__ERROR_WAIT_TIME_MINUTES * self.__SECONDS_IN_A_MINUTE)
+                continue
             self.__LOGGER.info(f"SLEEPING FOR {minutesInBetweenTweets} minutes...")
             time.sleep(minutesInBetweenTweets * self.__SECONDS_IN_A_MINUTE)
 
